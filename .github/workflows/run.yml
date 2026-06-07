@@ -37,6 +37,12 @@ jobs:
         with:
           ref: hidden
 
+      - name: Checkout the "master" branch metadata of this repo
+        uses: actions/checkout@v6
+        with:
+          ref: master
+          path: master-config
+
       - name: Checkout Loyalsoldier/domain-list-custom
         uses: actions/checkout@v6
         with:
@@ -86,7 +92,7 @@ jobs:
         run: |
           cd geoip || exit 1
           go build ./
-          ./geoip convert -c ../geoip-cira-config.json
+          ./geoip convert -c ../master-config/geoip-cira-config.json
           sha256sum ./output/geoip.dat > ./output/geoip.dat.sha256sum
 
       - name: Generate GFWList domains
