@@ -8,8 +8,8 @@
 
 - 通过仓库 [@Loyalsoldier/geoip](https://github.com/Loyalsoldier/geoip) 生成
 - 默认使用 [MaxMind GeoLite2 Country CSV 数据](https://github.com/Loyalsoldier/geoip/blob/release/GeoLite2-Country-CSV.zip)生成各个国家和地区的 GeoIP 文件。所有可供使用的国家和地区 geoip 类别（如 `geoip:cn`，两位英文字母表示国家或地区），请查看：[https://www.iban.com/country-codes](https://www.iban.com/country-codes)
-- 中国大陆 (`geoip:cn`) IPv4 地址数据使用 [@gaoyifan/china-operator-ip](https://github.com/gaoyifan/china-operator-ip/blob/ip-lists/china.txt)
-- 中国大陆 (`geoip:cn`) IPv6 地址数据使用 [@gaoyifan/china-operator-ip](https://github.com/gaoyifan/china-operator-ip/blob/ip-lists/china6.txt)
+- 本 fork 的中国大陆 (`geoip:cn`) IPv4 地址数据使用 [CIRA / china_all_v4.txt](https://cira.moedove.com/china_all_v4.txt)
+- 本 fork 的中国大陆 (`geoip:cn`) IPv6 地址数据使用 [CIRA / china_all_v6.txt](https://cira.moedove.com/china_all_v6.txt)
 - 新增类别（方便有特殊需求的用户使用）：
   - `geoip:cloudflare`
   - `geoip:cloudfront`

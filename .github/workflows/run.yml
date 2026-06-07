@@ -49,6 +49,12 @@ jobs:
           repository: v2fly/domain-list-community
           path: community
 
+      - name: Checkout Loyalsoldier/geoip
+        uses: actions/checkout@v6
+        with:
+          repository: Loyalsoldier/geoip
+          path: geoip
+
       - name: Checkout cokebar/gfwlist2dnsmasq
         uses: actions/checkout@v6
         with:
@@ -58,13 +64,30 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version-file: ./custom/go.mod
-          cache-dependency-path: ./custom/go.sum
+          go-version: "1.25.0"
+          cache-dependency-path: |
+            ./custom/go.sum
+            ./geoip/go.sum
 
-      - name: Get geoip.dat relative files
+      - name: Download GeoLite2 CSV archives
         run: |
-          wget https://github.com/Loyalsoldier/geoip/raw/release/geoip.dat
-          wget https://github.com/Loyalsoldier/geoip/raw/release/geoip.dat.sha256sum
+          curl -L https://raw.githubusercontent.com/Loyalsoldier/geoip/release/GeoLite2-Country-CSV.zip -o GeoLite2-Country-CSV.zip
+          curl -L https://raw.githubusercontent.com/Loyalsoldier/geoip/release/GeoLite2-ASN-CSV.zip -o GeoLite2-ASN-CSV.zip
+
+      - name: Prepare GeoLite2 CSV data
+        run: |
+          unzip -q GeoLite2-Country-CSV.zip
+          unzip -q GeoLite2-ASN-CSV.zip
+          mkdir -p ./geoip/geolite2
+          cp GeoLite2-Country-CSV_*/{GeoLite2-Country-Blocks-IPv4.csv,GeoLite2-Country-Blocks-IPv6.csv,GeoLite2-Country-Locations-en.csv} ./geoip/geolite2/
+          cp GeoLite2-ASN-CSV_*/{GeoLite2-ASN-Blocks-IPv4.csv,GeoLite2-ASN-Blocks-IPv6.csv} ./geoip/geolite2/
+
+      - name: Build custom geoip.dat
+        run: |
+          cd geoip || exit 1
+          go build ./
+          ./geoip convert -c ../geoip-cira-config.json
+          sha256sum ./output/geoip.dat > ./output/geoip.dat.sha256sum
 
       - name: Generate GFWList domains
         run: |
@@ -173,8 +196,8 @@ jobs:
 
       - name: Move and zip files and generate sha256 hash
         run: |
-          install -Dp ./geoip.dat ./publish/geoip.dat
-          install -Dp ./geoip.dat.sha256sum ./publish/geoip.dat.sha256sum
+          install -Dp ./geoip/output/geoip.dat ./publish/geoip.dat
+          install -Dp ./geoip/output/geoip.dat.sha256sum ./publish/geoip.dat.sha256sum
           install -Dp ./custom/publish/geosite.dat ./publish/geosite.dat
           install -p {proxy,direct,reject}-tld-list.txt ./publish/
           install -p {proxy,direct,reject}-list.txt ./publish/
